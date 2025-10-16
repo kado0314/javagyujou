@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>ホーム | ログイン後</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .search-form {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1><a th:href="@{/home_post}">ぷくぷくBOOKS</a></h1>
+        <div class="nav-links">
+            <a th:href="@{/profile}">ログイン中: <span th:text="${user.nickname}">ユーザー名</span></a> 
+        </div>
+    </header>
+
+    <div class="container">
+        <h2>書籍一覧</h2>
+
+        <div th:if="${successMessage}" class="message success" th:text="${successMessage}"></div>
+        <div th:if="${errorMessage}" class="message error" th:text="${errorMessage}"></div>
+
+        <form th:action="@{/search}" method="get" class="search-form">
+            <input type="text" name="keyword" placeholder="タイトル、著者名で検索..." class="input-text">
+            <button type="submit" class="btn-primary btn-search">検索</button> 
+            <a th:href="@{/advanced_search}" class="btn-secondary btn-filter">絞り込み検索 ▽</a>
+        </form>
+
+        <div class="book-list" style="margin-top: 20px;">
+            <div th:each="book : ${books}" class="book-card-container">
+                <div class="book-card-content">
+                    <img th:src="@{/images/bookimage/book_} + ${book.id} + '.png'" 
+                         alt="本の画像" class="book-image">
+
+                    <h3 th:text="${book.title}"><a th:href="@{/book/{id}(id=${book.id})}">書籍タイトル</a></h3>
+                    <p><strong>著者ID:</strong> <span th:text="${book.authorId}">著者ID</span></p>
+                    
+                    <p><strong>在庫:</strong> 
+                        <span th:if="${book.availableCopies > 0}" class="status-available">貸出可能 (残り <span th:text="${book.availableCopies}"></span> 冊)</span>
+                        <span th:unless="${book.availableCopies > 0}" class="status-loaned">貸出中 (在庫なし)</span>
+                    </p>
+
+                    <form th:action="@{/order/confirm}" method="get">
+                        <input type="hidden" name="bookId" th:value="${book.id}" />
+                        <button type="submit" class="btn-primary btn-loan" th:disabled="${book.availableCopies <= 0}">貸出</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
