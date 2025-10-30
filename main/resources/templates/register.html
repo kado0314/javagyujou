@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>新規会員登録</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <header class="header">
+        <h1>ぷくぷくBOOKS</h1>
+    </header>
+
+    <div class="container">
+        <h2>新規会員登録</h2>
+        
+        <div th:if="${errorMessage}" class="message error" th:text="${errorMessage}"></div>
+        
+        <form th:action="@{/register/execute}" th:object="${registerForm}" method="post" class="form-container">
+            
+            <div class="form-group">
+                <label for="email">メールアドレス</label>
+                <input type="email" id="email" th:field="*{email}" placeholder="メールアドレス" required>
+                <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="error-message"></span> 
+            </div>
+            
+            <div class="form-group">
+                <label for="password">パスワード</label>
+                <input type="password" id="password" th:field="*{password}" placeholder="パスワード（4文字以上）" required>
+                <span th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="error-message"></span>
+            </div>
+            
+            <div class="form-group">
+                <label for="confirmPassword">パスワード確認</label>
+                <input type="password" id="confirmPassword" th:field="*{confirmPassword}" placeholder="パスワード確認" required>
+                <span th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}" class="error-message"></span>
+            </div>
+            
+            <div class="form-group">
+                <label for="nickname">ニックネーム</label>
+                <input type="text" id="nickname" th:field="*{nickname}" placeholder="ニックネーム" required>
+                <span th:if="${#fields.hasErrors('nickname')}" th:errors="*{nickname}" class="error-message"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="zipcode">郵便番号</label>
+                <input type="text" id="zipcode" th:field="*{zipcode}" placeholder="郵便番号 (例: 1000001)" required>
+                <span th:if="${#fields.hasErrors('zipcode')}" th:errors="*{zipcode}" class="error-message"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="address">住所</label>
+                <input type="text" id="address" th:field="*{address}" placeholder="住所" required>
+                <span th:if="${#fields.hasErrors('address')}" th:errors="*{address}" class="error-message"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="phone">電話番号</label>
+                <input type="text" id="phone" th:field="*{phone}" placeholder="電話番号 (例: 09012345678)" required>
+                <span th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}" class="error-message"></span>
+            </div>
+            
+            <button type="submit" class="btn-primary">登録して認証へ進む</button>
+        </form>
+
+        <a th:href="@{/login_register}" class="btn-secondary btn-back">ログイン画面に戻る</a>
+    </div>
+</body>
+</html>

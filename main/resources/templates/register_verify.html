@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>新規登録認証コード入力</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"> 
+</head>
+<body>
+
+    <div class="container">
+        <div class="verify-box">
+            <h2>新規登録認証コードの入力</h2>
+            <p>ご登録いただいたメールアドレスに送信された認証コードを入力してください。（現在は「1234」で認証されます）</p>
+            
+            <div th:if="${errorMessage}" class="message error" th:text="${errorMessage}">
+                認証コードが正しくありません。
+            </div>
+
+            <form th:action="@{/register/verify/execute}" method="post">
+                <div class="form-group">
+                    <input type="text" id="authCode" name="authCode" placeholder="認証コードを入力" required maxlength="4">
+                </div>
+                <button type="submit" class="btn-primary">認証を完了する</button>
+            </form>
+
+            <a th:href="@{/login_register}" class="btn-secondary btn-back">ログイン画面に戻る</a>
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>ログイン/新規登録</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>.login-box { max-width: 400px; margin: 50px auto; padding: 30px; background-color: white; border-radius: 8px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); }</style>
+</head>
+<body>
+    <header class="header">
+        <h1><a th:href="@{/home}">ぷくぷくBOOKS</a></h1>
+    </header>
+
+    <div class="container">
+        <div class="login-box">
+            <h2>ログイン</h2>
+            <div th:if="${errorMessage}" class="message error" th:text="${errorMessage}"></div>
+
+            <form th:action="@{/login}" method="post" th:object="${loginForm}">
+                <div class="form-group">
+                    <label for="email">メールアドレス:</label>
+                    <input type="email" id="email" th:field="*{email}" required>
+                    <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="message error"></div>
+                </div>
+                <div class="form-group">
+                    <label for="password">パスワード:</label>
+                    <input type="password" id="password" th:field="*{password}" required>
+                    <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="message error"></div>
+                </div>
+                
+                <button type="submit" class="btn-primary" style="width: 100%;">完了 (ログイン)</button>
+            </form>
+
+            <hr style="margin: 20px 0;">
+            <p style="text-align: center;">アカウントをお持ちでない方</p>
+            <a th:href="@{/register}">
+                <button type="button" class="btn-primary" style="width: 100%; background-color: #6c757d;">新規登録</button>
+            </a>
+        </div>
+    </div>
+</body>
+</html>

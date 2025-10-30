@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>ホーム | ログイン前</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <header class="header">
+        <h1><a th:href="@{/home}">ぷくぷくBOOKS</a></h1>
+        <div class="nav-links">
+            <a th:href="@{/login_register}">新規登録/ログイン</a> 
+        </div>
+    </header>
+
+    <div class="container">
+        <h2>書籍一覧</h2>
+
+        <form th:action="@{/search}" method="get" class="search-form">
+            <input type="text" name="keyword" placeholder="タイトル、著者名で検索..." style="width: 300px; padding: 10px;">
+            <button type="submit" class="btn-primary">検索</button> 
+            <a th:href="@{/advanced_search}" style="margin-left: 10px;">絞り込み検索 ▽</a>
+        </form>
+
+        <div class="book-list" style="margin-top: 20px;">
+            <div th:each="book : ${books}" class="book-card">
+                <img th:src="@{/images/bookimage/book_} + ${book.id} + '.png'" 
+                     alt="本の画像" style="width: 100%; height: auto; border-radius: 4px; margin-bottom: 10px;">
+
+                <h4 th:text="${book.title}">書籍タイトル</h4>
+                
+                <p>著者: <span th:text="${book.authorName}">著者名</span></p> 
+                
+                <p><strong>在庫:</strong> <span th:text="${book.availableCopies}"></span> / <span th:text="${book.totalCopies}"></span> 冊</p>
+                
+                <a th:href="@{/book/{id}(id=${book.id})}" class="btn-detail">詳細を見る</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
