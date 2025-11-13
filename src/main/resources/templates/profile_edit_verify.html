@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>編集認証コード入力</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"> 
+    <style>
+        /* 簡易的なスタイル */
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 80vh;
+        }
+        .verify-box {
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 400px;
+            text-align: center;
+        }
+        .verify-box h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .verify-box p {
+            margin-bottom: 20px;
+            color: #666;
+            font-size: 0.9em;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group input {
+            width: 80%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 1.1em;
+            text-align: center;
+        }
+        .btn-submit {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+            margin-top: 10px;
+        }
+        .btn-submit:hover {
+            background-color: #0056b3;
+        }
+        .btn-back {
+            display: block;
+            margin-top: 15px;
+            color: #6c757d;
+            text-decoration: none;
+            font-size: 0.9em;
+        }
+        /* メッセージスタイル */
+        .message.error {
+            color: #dc3545; /* 赤色 */
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="verify-box">
+            <h2>編集認証コードの入力</h2>
+            <p>プロフィール情報変更のため、メールアドレスに送信された認証コードを入力してください</p>
+            
+            <div th:if="${errorMessage}" class="message error" th:text="${errorMessage}">
+                認証コードが正しくありません。
+            </div>
+
+            <form th:action="@{/profile/edit/execute}" method="post">
+                <div class="form-group">
+                    <input type="text" id="authCode" name="authCode" placeholder="認証コードを入力" required maxlength="6">
+                </div>
+                <button type="submit" class="btn-submit">認証を完了する</button>
+            </form>
+
+            <a th:href="@{/profile/edit}" class="btn-back">プロフィール編集画面に戻る</a>
+        </div>
+    </div>
+
+</body>
+</html>

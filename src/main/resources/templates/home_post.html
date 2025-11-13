@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>ホーム | ログイン後</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        /* 検索と並び替えのコントロール */
+        .search-controls {
+            display: flex;
+            flex-direction: column; /* 縦に並べる */
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .search-row-top {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .search-form {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .genre-tags {
+            display: flex;
+            gap: 10px;
+            margin-top: 5px;
+            flex-wrap: wrap; /* 折り返しを有効にする */
+        }
+        .genre-tag-button {
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 5px 10px;
+            cursor: pointer;
+            text-decoration: none;
+            color: #333;
+            transition: background-color 0.2s;
+        }
+        .genre-tag-button:hover {
+            background-color: #e0e0e0;
+        }
+        .select-sort {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .book-list {
+            display: flex;
+            flex-direction: column; 
+            gap: 15px; 
+        }
+        .book-card-container {
+            width: 100%; 
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .book-card-content {
+            display: flex; 
+            gap: 20px;
+            padding: 15px;
+            align-items: flex-start;
+        }
+        .book-image {
+            width: 120px; 
+            height: auto;
+            max-height: 180px; 
+            object-fit: contain;
+            flex-shrink: 0; 
+        }
+        .book-info-area {
+            flex-grow: 1; 
+        }
+        .status-available { color: green; font-weight: bold; }
+        .status-loaned { color: red; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1><a th:href="@{/home_post}">ぷくぷくBOOKS</a></h1>
+        <div class="nav-links">
+            <a th:href="@{/profile}">ログイン中: <span th:text="${user.nickname}">ユーザー名</span></a> 
+        </div>
+    </header>
+
+    <div class="container">
+        <h2>書籍一覧</h2>
+
+        <div th:if="${successMessage}" class="message success" th:text="${successMessage}"></div>
+        <div th:if="${errorMessage}" class="message error" th:text="${errorMessage}"></div>
+
+        <div class="search-controls">
+            
+            <div class="search-row-top">
+                <form th:action="@{/home_post}" method="get" class="search-form">
+                    <input type="hidden" name="sort" th:value="${currentSort}" /> 
+                    <input type="hidden" name="genreId" th:value="${currentGenreId}" /> 
+                    
+                    <input type="text" name="keyword" th:value="${currentKeyword}" 
+                           placeholder="タイトル、著者名、ジャンル名で検索..." class="input-text">
+                    <button type="submit" class="btn-primary btn-search">検索</button> 
+                </form>
+
+                <form th:action="@{/home_post}" method="get" class="search-form">
+                    <input type="hidden" name="keyword" th:value="${currentKeyword}" />
+                    <input type="hidden" name="genreId" th:value="${currentGenreId}" />
+                    <label for="sort-select">並び替え:</label>
+                    <select name="sort" id="sort-select" class="select-sort" onchange="this.form.submit()">
+                        <option value="id_asc" th:selected="${currentSort == 'id_asc'}">ID順 (古い順)</option>
+                        <option value="id_desc" th:selected="${currentSort == 'id_desc'}">新規順 (新しい順)</option>
+                        <option value="title_asc" th:selected="${currentSort == 'title_asc'}">あいうえお順 (タイトル昇順)</option>
+                    </select>
+                </form>
+            </div>
+            
+            <div th:unless="${#lists.isEmpty(randomGenres)}">
+                <p style="font-size: 0.9em; margin-bottom: 5px;">ランダムなおすすめジャンル:</p>
+                <div class="genre-tags">
+                    <a th:each="genre : ${randomGenres}" 
+                       th:href="@{/home_post(genreId=${genre.janreId}, sort=${currentSort}, keyword=${currentKeyword})}"
+                       th:class="${currentGenreId == genre.janreId} ? 'genre-tag-button active' : 'genre-tag-button'">
+                        <span th:text="${genre.janreName}">ジャンル名</span>
+                    </a>
+                    
+                    <a th:if="${currentGenreId != null and !currentGenreId.isBlank()}"
+                       th:href="@{/home_post(sort=${currentSort}, keyword=${currentKeyword})}"
+                       class="genre-tag-button" style="background-color: #f8d7da; color: #721c24;">
+                        X ジャンル検索をリセット
+                    </a>
+                </div>
+            </div>
+        </div>
+
+
+        <div th:if="${searchExecuted and #lists.isEmpty(books)}" class="message warning" style="margin-top: 15px;">
+            検索条件に一致する書籍は見つかりませんでした。
+        </div>
+
+        <div class="book-list" style="margin-top: 20px;">
+            <div th:each="book : ${books}" class="book-card-container">
+                
+                <div class="book-card-content">
+                    
+                    <img th:src="@{/bookimage/book_} + ${book.id} + '.png'" 
+                          alt="本の画像" class="book-image">
+
+                    <div class="book-info-area">
+                        <h3 class="book-title">
+                            <a th:href="@{/book/{id}(id=${book.id})}" th:text="${book.title}">書籍タイトル</a>
+                        </h3>
+                        
+                        <p><strong>著者名:</strong> <span th:text="${book.authorName} ?: '著者名不明'">著者ID</span></p>
+                        <p><strong>ジャンル:</strong> <span th:text="${book.janreName} ?: 'ジャンル不明'">ジャンル</span></p>
+
+                        <p><strong>在庫:</strong> 
+                            <span th:if="${book.availableCopies > 0}" class="status-available">貸出可能 (残り <span th:text="${book.availableCopies}"></span> 冊)</span>
+                            <span th:unless="${book.availableCopies > 0}" class="status-loaned">貸出中 (在庫なし)</span>
+                        </p>
+
+                        <form th:action="@{/order/confirm}" method="get" style="margin-top: 10px;">
+                            <input type="hidden" name="bookId" th:value="${book.id}" />
+                            <button type="submit" class="btn-primary btn-loan" th:disabled="${book.availableCopies <= 0}">貸出</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
